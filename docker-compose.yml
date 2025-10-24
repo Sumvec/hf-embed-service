@@ -1,0 +1,14 @@
+version: "3.8"
+services:
+  hf-embed:
+    build: .
+    image: hf-embed-service:latest
+    ports:
+      - "8000:8000"
+    environment:
+      - MODEL_NAME=/models/all-MiniLM-L6-v2
+      - TRANSFORMERS_OFFLINE=1
+      - BATCH_SIZE=32
+    volumes:
+      - ./models:/models:ro
+    restart: unless-stopped
