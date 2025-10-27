@@ -62,6 +62,11 @@ async def embed(req: EmbedRequest):
 def info():
     return {"model": settings.MODEL_NAME, "batch_size": settings.BATCH_SIZE}
 
+# Health check endpoint
+@app.get("/health")
+def health_check():
+    return {"status": "ok", "message": "Embedding service is running"}
+
 # Helper: Chunk long texts
 def chunk_text(text: str, max_tokens: int = 250, overlap: int = 30):
     tokens = word_tokenize(text)
