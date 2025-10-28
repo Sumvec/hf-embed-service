@@ -18,6 +18,7 @@ app = FastAPI(
 
 class EmbedRequest(BaseModel):
     texts: List[str] = Field(..., min_items=1)
+    modelName: str | None = None  # Optional model name
 
 class EmbedResponse(BaseModel):
     embeddings: List[List[float]]
@@ -32,14 +33,11 @@ def on_startup():
     embed_model.load()
     log.info("Model loaded and ready")
 
-@app.get("/healthz", tags=["utility"])
-def health():
-    return {"status": "ok"}
-
 @app.post("/embed", response_model=EmbedResponse, tags=["embed"])
 async def embed(req: EmbedRequest):
     try:
         texts = req.texts
+        model_name = req.modelName
         all_embeddings = []
 
         for text in texts:
@@ -47,7 +45,7 @@ async def embed(req: EmbedRequest):
             chunks = chunk_text(text)
 
             # Encode each chunk and average into one vector
-            chunk_vectors = embed_model.encode(chunks)
+            chunk_vectors = embed_model.encode(chunks, model_name=model_name)
             avg_vector = np.mean(chunk_vectors, axis=0)
             all_embeddings.append(list(map(float, avg_vector.tolist())))
 
@@ -60,7 +58,12 @@ async def embed(req: EmbedRequest):
 
 @app.get("/info", tags=["utility"])
 def info():
-    return {"model": settings.MODEL_NAME, "batch_size": settings.BATCH_SIZE}
+    from .model import MODEL_NAMES, DEFAULT_MODEL_NAME
+    return {
+        "available_models": MODEL_NAMES,
+        "default_model": DEFAULT_MODEL_NAME,
+        "batch_size": settings.BATCH_SIZE
+    }
 
 # Health check endpoint
 @app.get("/health")
