@@ -22,7 +22,7 @@ RUN python -m nltk.downloader punkt
 COPY app ./app
 
 # Copy .env if you want (optional, can mount at runtime)
-COPY .env .env
+#COPY .env .env
 
 # Expose port
 EXPOSE 8000

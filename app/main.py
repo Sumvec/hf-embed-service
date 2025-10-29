@@ -6,6 +6,7 @@ from .settings import settings
 from .model import embed_model
 import numpy as np
 from nltk.tokenize import word_tokenize
+from bs4 import BeautifulSoup
 
 logging.basicConfig(level=logging.INFO)
 log = logging.getLogger("hf-embed-service")
@@ -72,7 +73,8 @@ def health_check():
 
 # Helper: Chunk long texts
 def chunk_text(text: str, max_tokens: int = 250, overlap: int = 30):
-    tokens = word_tokenize(text)
+    clean_text = BeautifulSoup(text, "html.parser").get_text()
+    tokens = word_tokenize(clean_text)
     chunks = []
     start = 0
     while start < len(tokens):
