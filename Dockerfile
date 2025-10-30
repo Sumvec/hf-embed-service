@@ -22,10 +22,10 @@ RUN python -m nltk.downloader punkt
 COPY app ./app
 
 # Copy .env if you want (optional, can mount at runtime)
-#COPY .env .env
+COPY .env.example .env
 
 # Expose port
-EXPOSE 8000
+EXPOSE 8002
 
 # Start FastAPI using uvicorn
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8002"]
