@@ -8,7 +8,7 @@ MODEL_NAMES = [
     "sentence-transformers/all-mpnet-base-v2",
     "sentence-transformers/all-MiniLM-L6-v2"
 ]
-DEFAULT_MODEL_NAME = "sentence-transformers/all-mpnet-base-v2"
+DEFAULT_MODEL_NAME = "sentence-transformers/all-MiniLM-L6-v2"
 
 class EmbedModel:
     def __init__(self):
