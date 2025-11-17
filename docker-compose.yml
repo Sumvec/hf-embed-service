@@ -11,4 +11,9 @@ services:
       - BATCH_SIZE=32
     volumes:
       -  ~/.cache/huggingface:/root/.cache/huggingface
+    networks:
+      - app-net
     restart: unless-stopped
+networks:
+  app-net:
+    external: true
