@@ -73,6 +73,10 @@ def health_check():
 
 # Helper: Chunk long texts
 def chunk_text(text: str, max_tokens: int = 250, overlap: int = 30):
+    # If text is short, return as-is without chunking
+    if len(text) < 30:
+        return [text] if text else [""]
+    
     clean_text = BeautifulSoup(text, "html.parser").get_text()
     tokens = word_tokenize(clean_text)
     chunks = []
