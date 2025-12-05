@@ -1,5 +1,23 @@
-# ===== Stage 1: Base =====
-FROM python:3.11-slim as base
+# ===== Stage 1: Builder =====
+FROM python:3.11-slim as builder
+
+# Set work directory
+WORKDIR /app
+
+# Install build dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential \
+    && rm -rf /var/lib/apt/lists/*
+
+# Upgrade pip and install dependencies
+RUN python -m pip install --upgrade pip setuptools wheel
+
+# Copy requirements and install to a specific directory
+COPY requirements.txt .
+RUN pip install --no-cache-dir --prefix=/install -r requirements.txt
+
+# ===== Stage 2: Runtime =====
+FROM python:3.11-slim
 
 # Set environment variables
 ENV PYTHONDONTWRITEBYTECODE=1
@@ -8,12 +26,8 @@ ENV PYTHONUNBUFFERED=1
 # Set work directory
 WORKDIR /app
 
-# Upgrade pip and install dependencies
-RUN python -m pip install --upgrade pip setuptools wheel
-
-# Copy requirements first for caching
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+# Copy installed packages from builder
+COPY --from=builder /install /usr/local
 
 # Download NLTK tokenizer data (punkt)
 RUN python -m nltk.downloader punkt
